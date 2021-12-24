@@ -5,18 +5,19 @@ class Stock:
     def __init__(self):
         #Initializing Pre-Requisites
         self.url = "https://dps.psx.com.pk/market-watch"
-        self.filename = "Marketdata %s.xlsx"%datetime.now().strftime('%d-%m-%Y')
+        self.filename = "Market_Data\Marketdata %s.xlsx"%datetime.now().strftime('%d-%m-%Y')
         self.df = self.read_file(self.filename)
 
+        
 #Getting date and time to save file with it
     def get_file_data(self):
         table = pd.read_html(self.url)[0]
-        self.filename = "Marketdata %s.xlsx"%datetime.now().strftime('%d-%m-%Y')
+        self.filename = "Market_Data\Marketdata %s.xlsx"%datetime.now().strftime('%d-%m-%Y')
         table.to_excel(self.filename)
 
 
     def read_file(self,file):
-        self.get_file_data()
+        #self.get_file_data()
         df = pd.read_excel(file)
         return df
 
@@ -41,6 +42,16 @@ class Stock:
         except:
             print("No such stock as {}".format(stock_name))
             return None
+        
+    def get_stock_change(self,stock_name):
+        name = self.get_stock(stock_name)
+        try:
+            vallist = (name["CHANGE"].values)
+            return vallist[0]
+        except:
+            print("No such stock as {}".format(stock_name))
+            return None
+
 
     def get_stock_change_percent(self,stock_name):
         name = self.get_stock(stock_name)
