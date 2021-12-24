@@ -8,6 +8,8 @@ class User:
         self.stock = Stock()
         #Preparing to Store direclty to Excel File of User. Currently using Driver code to generate user.
         self.df = self.get_user_file_data()
+        #Updated user stocks data in code from existing sheet to avoid overwrite! BIG SUCCESS!
+        self.update_user_profile()
 
     #Fetching Data of Current user.
     def get_user_file_data(self):
@@ -28,8 +30,9 @@ class User:
                 self.bought = self.stock.get_stock_current_value(stock_get) 
 
 
-    def print_user_profile(self):
-        print("{} has".format(self.user_name))
+    def update_user_profile(self):
+        for i in self.df.values:
+            self.user_stocks[i[0]]=[i[1],[i[3]]]
         print(self.user_stocks)
     
     
@@ -57,33 +60,35 @@ class User:
         o = {}
         l = {}
         # Create a Pandas dataframe from the data.
-        for i in self.user_stocks:
-            o[i] = self.user_stocks[i][0]
-            l[i] = self.user_stocks[i][1]
-            a[i] = self.stock.get_stock_current_value(i)
-            b[i] = self.stock.get_stock_change_percent(i)
-            c[i] = self.stock.get_stock_change(i)
-            d[i] = (self.stock.get_stock_current_value(i) - self.user_stocks[i][1]) * self.user_stocks[i][0]
+        if self.user_stocks != {}:
+            for i in self.user_stocks:
+                o[i] = self.user_stocks[i][0]
+                l[i] = self.user_stocks[i][1]
+                a[i] = self.stock.get_stock_current_value(i)
+                b[i] = self.stock.get_stock_change_percent(i)
+                c[i] = self.stock.get_stock_change(i)
+                d[i] = (self.stock.get_stock_current_value(i) - self.user_stocks[i][1]) * self.user_stocks[i][0]
 
-        df = pd.DataFrame({'Quantity': o,'Bought at':l,'Current Price': a, 'Change %': b, 'Change': c, 'Profit/Loss':d})
+            df = pd.DataFrame({'Quantity': o,'Bought at':l,'Current Price': a, 'Change %': b, 'Change': c, 'Profit/Loss':d})
 
-        # Create a Pandas Excel writer using XlsxWriter as the engine.
-        writer = pd.ExcelWriter("Users\{}.xlsx".format(self.user_name), engine='xlsxwriter')
+            # Create a Pandas Excel writer using XlsxWriter as the engine.
+            writer = pd.ExcelWriter("Users\{}.xlsx".format(self.user_name), engine='openpyxl')
 
 
-        # Convert the dataframe to an XlsxWriter Excel object.
-        df.to_excel(writer, sheet_name='Sheet1')
+            # Convert the dataframe to an XlsxWriter Excel object.
+            df.to_excel(writer, sheet_name='Sheet1')
 
-        # Close the Pandas Excel writer and output the Excel file.
-        writer.save()
-        
+            # Close the Pandas Excel writer and output the Excel file.
+            writer.save()
+        else:
+            print("No files lmfao")
+            
 a = User("Raf")
-a.add_stock("TRG",50)
-a.add_stock("BWCL",500)
-a.add_stock("LMAO",1)
-a.add_stock("GGL",500)
-a.add_stock("BERG",1000)
-a.print_user_profile()
+# a.add_stock("TRG",50)
+# a.add_stock("BWCL",500)
+# a.add_stock("LMAO",1)
+# a.add_stock("GGL",500)
+# a.add_stock("BERG",1000)
 a.print_user_profile_with_values()
 print(a.return_user_profile_worth())
 a.print_user_profile_percentage()
