@@ -53,23 +53,26 @@ class User:
         print(total_percent)
     
     def save_user_to_file(self):
-        a = {}
-        b = {}
-        c = {}
-        d = {}
-        o = {}
-        l = {}
+        current_price = {}
+        change_percent = {}
+        change = {}
+        profit_loss = {} #Me
+        quantity = {}
+        bought_at = {} #Me
         # Create a Pandas dataframe from the data.
         if self.user_stocks != {}:
             for i in self.user_stocks:
-                o[i] = self.user_stocks[i][0]
-                l[i] = self.user_stocks[i][1]
-                a[i] = self.stock.get_stock_current_value(i)
-                b[i] = self.stock.get_stock_change_percent(i)
-                c[i] = self.stock.get_stock_change(i)
-                d[i] = (self.stock.get_stock_current_value(i) - self.user_stocks[i][1]) * self.user_stocks[i][0]
+                quantity[i] = self.user_stocks[i][0]
+                if type(self.user_stocks[i][1])==list:
+                    self.user_stocks[i][1] = (self.user_stocks[i][1])[0]
+                bought_at[i] = self.user_stocks[i][1]
+                current_price[i] = self.stock.get_stock_current_value(i)
+                change_percent[i] = self.stock.get_stock_change_percent(i)
+                change[i] = self.stock.get_stock_change(i)
+                profit_loss[i] = (self.stock.get_stock_current_value(i) - self.user_stocks[i][1]) * self.user_stocks[i][0]
+                
 
-            df = pd.DataFrame({'Quantity': o,'Bought at':l,'Current Price': a, 'Change %': b, 'Change': c, 'Profit/Loss':d})
+            df = pd.DataFrame({'Quantity': quantity,'Bought at':bought_at,'Current Price': current_price, 'Change %': change_percent, 'Change': change, 'Profit/Loss':profit_loss})
 
             # Create a Pandas Excel writer using XlsxWriter as the engine.
             writer = pd.ExcelWriter("Users\{}.xlsx".format(self.user_name), engine='openpyxl')
@@ -84,7 +87,7 @@ class User:
             print("No files lmfao")
             
 a = User("Raf")
-# a.add_stock("TRG",50)
+#a.add_stock("BUXL",50)
 # a.add_stock("BWCL",500)
 # a.add_stock("LMAO",1)
 # a.add_stock("GGL",500)
