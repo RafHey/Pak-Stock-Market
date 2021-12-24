@@ -10,6 +10,7 @@ class Stock:
 
         
 #Getting date and time to save file with it
+
     def get_file_data(self):
         table = pd.read_html(self.url)[0]
         self.filename = "Market_Data\Marketdata %s.xlsx"%datetime.now().strftime('%d-%m-%Y')
@@ -17,7 +18,7 @@ class Stock:
 
 
     def read_file(self,file):
-        #self.get_file_data()
+        self.get_file_data()
         df = pd.read_excel(file)
         return df
 
@@ -62,7 +63,3 @@ class Stock:
         except:
             print("No such stock as {}".format(stock_name))
             return None
-
-a = Stock()
-
-print(a.get_stock_change_percent("TRG"))

@@ -1,5 +1,6 @@
 from stock import Stock
 import pandas as pd
+from openpyxl import Workbook
 
 class User:
     def __init__(self,name):
@@ -7,9 +8,21 @@ class User:
         self.user_stocks = {}
         self.stock = Stock()
         #Preparing to Store direclty to Excel File of User. Currently using Driver code to generate user.
-        self.df = self.get_user_file_data()
+        try:
+            self.df = self.get_user_file_data()
+        except:
+            self.make_user_file()
+            self.df = self.get_user_file_data()
+
+
         #Updated user stocks data in code from existing sheet to avoid overwrite! BIG SUCCESS!
         self.update_user_profile()
+
+    def make_user_file(self):
+        wb = Workbook()
+        ws = wb.active
+        self.filename = "Users\{}.xlsx".format(self.user_name)
+        wb.save(filename = self.filename )
 
     #Fetching Data of Current user.
     def get_user_file_data(self):
