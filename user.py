@@ -1,12 +1,14 @@
 from stock import Stock
 import pandas as pd
 from openpyxl import Workbook
+from datetime import datetime
 
 class User:
     def __init__(self,name):
         self.user_name = name
         self.user_stocks = {}
         self.stock = Stock()
+        self.quantbought = {}
         #Preparing to Store direclty to Excel File of User. Currently using Driver code to generate user.
         try:
             self.df = self.get_user_file_data()
@@ -35,12 +37,37 @@ class User:
         stock_get = self.stock.get_stock_name(stock_name)
         if stock_get in self.user_stocks:
             if stock_get is not None:
-                self.user_stocks[stock_get] = [self.user_stocks[stock_get][0]+quantity,self.stock.get_stock_current_value(stock_get)]
-                self.bought = self.stock.get_stock_current_value(stock_get)
+                self.user_stocks[stock_get][0].append(quantity)
+                self.user_stocks[stock_get][1].append(self.stock.get_stock_current_value(stock_get))
+                self.user_stocks[stock_get][2].append('%s'%datetime.now().strftime('%d-%m-%Y'))
+                q = []
+
+                for i in range(len(self.user_stocks[stock_get])+1):
+                    for j in range(len(self.user_stocks[stock_get][0])+1):
+                        if i==j:
+                            q.append(self.user_stocks[stock_get][i][0])
+
+                print(q)
+
+                    #print(self.user_stocks[stock_get][i])                                   
+                # self.user_stocks[stock_get] = [self.user_stocks[stock_get][0]+quantity,self.stock.get_stock_current_value(stock_get)]
+                # self.bought = self.stock.get_stock_current_value(stock_get)
         else:
             if stock_get is not None: 
-                self.user_stocks[stock_get] = [quantity,self.stock.get_stock_current_value(stock_get)]
-                self.bought = self.stock.get_stock_current_value(stock_get) 
+                self.quant = []
+                self.bought_at_price = []
+                self.bought_at_date = []
+                self.quant.append(quantity)
+                self.bought_at_price.append(self.stock.get_stock_current_value(stock_get))
+                self.bought_at_date.append('%s'%datetime.now().strftime('%d-%m-%Y'))
+                self.user_stocks[stock_get] = [self.quant,self.bought_at_price,self.bought_at_date]
+                
+
+
+                # self.user_stocks[stock_get] = self.quantbought
+                # self.user_stocks[stock_get] = self.quantbought['bought'] = self.stock.get_stock_current_value(stock_get)
+                # self.user_stocks[stock_get] = [quantity,self.stock.get_stock_current_value(stock_get)]
+                # self.bought = self.stock.get_stock_current_value(stock_get) 
 
 
     def update_user_profile(self):
